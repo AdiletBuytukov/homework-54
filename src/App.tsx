@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import './App.css';
+import Square from './Square/Square.tsx';
+import createItems from './Item/Item.tsx';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => {
+  const [items, setItems] = useState(createItems);
+  const [attempts, setAttempts] = useState(0);
+
+  const squareClick = (row: number, col: number) => {
+    setItems((prevItems) => {
+      const newItems = [...prevItems];
+      newItems[row][col].isOpen = true;
+      return newItems;
+    });
+    setAttempts((prevAttempts) => prevAttempts + 1);
+  };
+
+  const handleReset = () => {
+    setItems(createItems);
+    setAttempts(0);
+  };
 
   return (
-    <>
+    <div>
+      <div className="game-board">
+        {items.map((row, rowIndex) =>
+          row.map((item, colIndex) => (
+            <Square
+              key={`${rowIndex}-${colIndex}`}
+              ring={item.ring}
+              squareOpen={item.isOpen}
+              onClick={() => squareClick(rowIndex, colIndex)}
+            />
+          ))
+        )}
+      </div>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <button onClick={handleReset} className="reset-btn">Reset</button>
+        <p>Attempts: {attempts}</p>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    </div>
+  );
+};
 
-export default App
+export default App;
